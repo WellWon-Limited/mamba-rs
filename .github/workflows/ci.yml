@@ -24,7 +24,7 @@ env:
 jobs:
   lockfile:
     name: Cargo.lock up to date
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -33,7 +33,7 @@ jobs:
 
   fmt:
     name: Rustfmt
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -44,7 +44,7 @@ jobs:
 
   clippy:
     name: Clippy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -56,7 +56,7 @@ jobs:
 
   docs:
     name: Documentation
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     env:
       RUSTDOCFLAGS: -Dwarnings
@@ -68,7 +68,7 @@ jobs:
 
   msrv:
     name: MSRV (1.97)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -80,7 +80,7 @@ jobs:
 
   basics:
     name: Gate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: [lockfile, fmt, clippy, docs, msrv, deny]
     steps:
       - run: exit 0
@@ -94,11 +94,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # The house's own machines: four Linux runners on ada and two
+          # Macs. Windows has no runner of ours yet and stays hosted.
+          - os: [self-hosted, linux, x64]
             rust: stable
-          - os: ubuntu-latest
+          - os: [self-hosted, linux, x64]
             rust: nightly
-          - os: macos-latest
+          - os: [self-hosted, macOS, ARM64]
             rust: stable
           - os: windows-latest
             rust: stable
@@ -115,7 +117,7 @@ jobs:
   publish-check:
     name: Publish dry-run
     needs: [basics, test]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -125,7 +127,7 @@ jobs:
 
   deny:
     name: Security audit
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
